@@ -1,0 +1,28 @@
+# Render Blueprint: the same code deployed twice, one service per storage strategy.
+# Free plan: services sleep after 15 minutes idle; the first request then takes about a minute.
+services:
+  - name: rate-limit-memory
+    type: web
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.server:app --host 0.0.0.0 --port $PORT
+    autoDeployTrigger: commit
+    envVars:
+      - key: STORAGE
+        value: memory
+
+  - name: rate-limit-redis
+    type: web
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.server:app --host 0.0.0.0 --port $PORT
+    autoDeployTrigger: commit
+    envVars:
+      - key: STORAGE
+        value: redis
+      - key: REDIS_URL   # Upstash rediss:// URL, entered in the Render dashboard; never committed
+        sync: false

@@ -1,0 +1,12 @@
+# Rate limits per client (the id sent as "Authorization: Bearer <client-id>").
+#   foo: token bucket  - capacity = burst size, refill_per_second = tokens added per second
+#   bar: leaky bucket  - drain_per_second = requests let through per second,
+#                        queue_depth = requests allowed to wait (0 = reject anything that can't go now)
+# Low numbers on purpose, so every limit can be overflowed by hand in a demo.
+clients:
+  client-1:   # tight
+    foo: { capacity: 3, refill_per_second: 0.5 }
+    bar: { drain_per_second: 0.5, queue_depth: 2 }
+  client-2:   # loose
+    foo: { capacity: 6, refill_per_second: 1 }
+    bar: { drain_per_second: 1, queue_depth: 4 }
